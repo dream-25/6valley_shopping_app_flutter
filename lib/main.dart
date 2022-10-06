@@ -1,13 +1,16 @@
 import 'dart:async';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:sixvalley_vendor_app/localization/app_localization.dart';
 import 'package:sixvalley_vendor_app/provider/auth_provider.dart';
+import 'package:sixvalley_vendor_app/provider/bank_info_provider.dart';
 import 'package:sixvalley_vendor_app/provider/business_provider.dart';
 import 'package:sixvalley_vendor_app/provider/chat_provider.dart';
 import 'package:sixvalley_vendor_app/provider/delivery_man_provider.dart';
@@ -23,7 +26,6 @@ import 'package:sixvalley_vendor_app/provider/shipping_provider.dart';
 import 'package:sixvalley_vendor_app/provider/shop_info_provider.dart';
 import 'package:sixvalley_vendor_app/provider/splash_provider.dart';
 import 'package:sixvalley_vendor_app/provider/theme_provider.dart';
-import 'package:sixvalley_vendor_app/provider/bank_info_provider.dart';
 import 'package:sixvalley_vendor_app/provider/transaction_provider.dart';
 import 'package:sixvalley_vendor_app/theme/dark_theme.dart';
 import 'package:sixvalley_vendor_app/theme/light_theme.dart';
@@ -32,21 +34,23 @@ import 'package:sixvalley_vendor_app/view/screens/splash/splash_screen.dart';
 
 import 'di_container.dart' as di;
 import 'notification/my_notification.dart';
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  await FlutterDownloader.initialize(
-      debug: true ,
-      ignoreSsl: true
-  );
+  await FlutterDownloader.initialize(debug: true, ignoreSsl: true);
   await di.init();
-  final NotificationAppLaunchDetails notificationAppLaunchDetails = await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
+  final NotificationAppLaunchDetails notificationAppLaunchDetails =
+      await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
   int _orderID;
   if (notificationAppLaunchDetails?.didNotificationLaunchApp ?? false) {
-    _orderID = (notificationAppLaunchDetails.payload != null && notificationAppLaunchDetails.payload.isNotEmpty)
-        ? int.parse(notificationAppLaunchDetails.payload) : null;
+    _orderID = (notificationAppLaunchDetails.payload != null &&
+            notificationAppLaunchDetails.payload.isNotEmpty)
+        ? int.parse(notificationAppLaunchDetails.payload)
+        : null;
   }
   await MyNotification.initialize(flutterLocalNotificationsPlugin);
   FirebaseMessaging.onBackgroundMessage(myBackgroundMessageHandler);
@@ -56,7 +60,8 @@ Future<void> main() async {
       ChangeNotifierProvider(create: (context) => di.sl<ThemeProvider>()),
       ChangeNotifierProvider(create: (context) => di.sl<SplashProvider>()),
       ChangeNotifierProvider(create: (context) => di.sl<LanguageProvider>()),
-      ChangeNotifierProvider(create: (context) => di.sl<LocalizationProvider>()),
+      ChangeNotifierProvider(
+          create: (context) => di.sl<LocalizationProvider>()),
       ChangeNotifierProvider(create: (context) => di.sl<AuthProvider>()),
       ChangeNotifierProvider(create: (context) => di.sl<ProfileProvider>()),
       ChangeNotifierProvider(create: (context) => di.sl<ShopProvider>()),
@@ -67,7 +72,8 @@ Future<void> main() async {
       ChangeNotifierProvider(create: (context) => di.sl<TransactionProvider>()),
       ChangeNotifierProvider(create: (context) => di.sl<RestaurantProvider>()),
       ChangeNotifierProvider(create: (context) => di.sl<ProductProvider>()),
-      ChangeNotifierProvider(create: (context) => di.sl<ProductReviewProvider>()),
+      ChangeNotifierProvider(
+          create: (context) => di.sl<ProductReviewProvider>()),
       ChangeNotifierProvider(create: (context) => di.sl<ShippingProvider>()),
       ChangeNotifierProvider(create: (context) => di.sl<DeliveryManProvider>()),
       ChangeNotifierProvider(create: (context) => di.sl<RefundProvider>()),
@@ -85,7 +91,7 @@ class MyApp extends StatelessWidget {
     AppConstants.languages.forEach((language) {
       _locals.add(Locale(language.languageCode, language.countryCode));
     });
-    return MaterialApp(
+    return GetMaterialApp(
       title: '6Valley Vendor',
       debugShowCheckedModeBanner: false,
       navigatorKey: navigatorKey,

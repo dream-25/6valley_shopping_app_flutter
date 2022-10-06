@@ -6,7 +6,7 @@ import 'package:sixvalley_vendor_app/utill/styles.dart';
 extension EmailValidator on String {
   bool isValidEmail() {
     return RegExp(
-        r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
+            r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
         .hasMatch(this);
   }
 }
@@ -22,6 +22,7 @@ class CustomTextField extends StatelessWidget {
   final bool isPhoneNumber;
   final bool isValidator;
   final String validatorMessage;
+  final Widget prefix;
   final Color fillColor;
   final TextCapitalization capitalization;
   final bool isAmount;
@@ -30,34 +31,39 @@ class CustomTextField extends StatelessWidget {
   final bool isDescription;
   final Function(String text) onChanged;
 
-  CustomTextField(
-      {this.controller,
-        this.hintText,
-        this.textInputType,
-        this.maxLine,
-        this.focusNode,
-        this.nextNode,
-        this.textInputAction,
-        this.isPhoneNumber = false,
-        this.isValidator=false,
-        this.validatorMessage,
-        this.capitalization = TextCapitalization.none,
-        this.fillColor,
-        this.isAmount = false,
-        this.amountIcon = false,
-        this.border = false,
-        this.isDescription = false,
-        this.onChanged,
-      });
+  CustomTextField({
+    this.controller,
+    this.hintText,
+    this.textInputType,
+    this.maxLine,
+    this.focusNode,
+    this.nextNode,
+    this.textInputAction,
+    this.isPhoneNumber = false,
+    this.isValidator = false,
+    this.prefix,
+    this.validatorMessage,
+    this.capitalization = TextCapitalization.none,
+    this.fillColor,
+    this.isAmount = false,
+    this.amountIcon = false,
+    this.border = false,
+    this.isDescription = false,
+    this.onChanged,
+  });
 
   @override
   Widget build(context) {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        border:border? Border.all(width: 1, color: Theme.of(context).hintColor.withOpacity(.35)):null,
+        border: border
+            ? Border.all(
+                width: 1, color: Theme.of(context).hintColor.withOpacity(.35))
+            : null,
         color: Theme.of(context).highlightColor,
-        borderRadius: BorderRadius.circular(Dimensions.PADDING_SIZE_EXTRA_SMALL),
+        borderRadius:
+            BorderRadius.circular(Dimensions.PADDING_SIZE_EXTRA_SMALL),
       ),
       child: TextFormField(
         controller: controller,
@@ -67,33 +73,44 @@ class CustomTextField extends StatelessWidget {
         focusNode: focusNode,
         initialValue: null,
         onChanged: onChanged,
-        inputFormatters: (textInputType == TextInputType.phone || isPhoneNumber) ? <TextInputFormatter>[FilteringTextInputFormatter.allow(RegExp('[0-9+]'))]
-            : isAmount ? [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))] : null,
-        keyboardType: isAmount ? TextInputType.number : textInputType ?? TextInputType.text,
+        inputFormatters: (textInputType == TextInputType.phone || isPhoneNumber)
+            ? <TextInputFormatter>[
+                FilteringTextInputFormatter.allow(RegExp('[0-9+]'))
+              ]
+            : isAmount
+                ? [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))]
+                : null,
+        keyboardType: isAmount
+            ? TextInputType.number
+            : textInputType ?? TextInputType.text,
         textInputAction: textInputAction ?? TextInputAction.next,
         onFieldSubmitted: (v) {
           FocusScope.of(context).requestFocus(nextNode);
         },
-
-        validator: (input){
-          if(input.isEmpty){
-            if(isValidator){
-              return validatorMessage??"";
+        validator: (input) {
+          if (input.isEmpty) {
+            if (isValidator) {
+              return validatorMessage ?? "";
             }
           }
           return null;
-
         },
         decoration: InputDecoration(
           hintText: hintText ?? '',
-          focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Theme.of(context).primaryColor,)),
+          focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+            color: Theme.of(context).primaryColor,
+          )),
           filled: fillColor != null,
           fillColor: fillColor,
           isDense: true,
-          contentPadding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 15),
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 15.0, horizontal: 15),
           alignLabelWithHint: true,
           counterText: '',
-          hintStyle: titilliumRegular.copyWith(color: Theme.of(context).hintColor),
+          prefix: prefix ?? null,
+          hintStyle:
+              titilliumRegular.copyWith(color: Theme.of(context).hintColor),
           errorStyle: TextStyle(height: 1.5),
           border: InputBorder.none,
         ),
